@@ -30,6 +30,9 @@
                           <strong>{{ history.modified_at|date:"Y-m-d H:i" }}</strong><br>
                           {{ history.subject }}<br>
                           {{ history.content|truncatechars:100 }}
+                            {% if request.user == question.author %}
+                            <a href="{% url 'pybo:question_restore' history.id %}" class="btn btn-sm btn-outline-primary mt-2">이 내용으로 되돌리기</a>
+                            {% endif %}
                         </li>
                       {% endfor %}
                     </ul>
