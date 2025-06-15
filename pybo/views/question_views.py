@@ -65,3 +65,27 @@ def question_delete(request, question_id):
         return redirect('pybo:detail', question_id=question.id)
     question.delete()
     return redirect('pybo:index')
+
+@login_required
+def question_restore(request, history_id):
+    history = get_object_or_404(QuestionHistory, pk=history_id)
+    question = history.question
+
+    if request.user != question.author:
+        messages.error(request, '복원 권한이 없습니다.')
+        return redirect('pybo:detail', question.id)
+
+    # 복원: 현재 질문 내용을 다시 히스토리로 백업
+    QuestionHistory.objects.create(
+        question=question,
+        subject=question.subject,
+        content=question.content,
+    )
+
+    # 질문 내용 복원
+    question.subject = history.subject
+    question.content = history.content
+    question.save()
+
+    messages.success(request, '이전 버전으로 복원되었습니다.')
+    return redirect('pybo:detail', question.id)
