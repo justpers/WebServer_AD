@@ -1,6 +1,6 @@
-# api/urls.py
 from django.urls import path
+from .views import AnswerListAPI
 
 urlpatterns = [
-    # 이후 여기에 API 엔드포인트를 추가합니다.
+    path('questions/<int:question_id>/answers/', AnswerListAPI.as_view(), name='answer-list-api'),
 ]
