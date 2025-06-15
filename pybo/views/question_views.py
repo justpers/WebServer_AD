@@ -4,7 +4,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 
 from ..forms import QuestionForm
-from ..models import Question
+from ..models import Question, QuestionHistory
 
 
 @login_required(login_url='common:login')
@@ -39,9 +39,13 @@ def question_modify(request, question_id):
     if request.method == "POST":
         form = QuestionForm(request.POST, instance=question)
         if form.is_valid():
+            QuestionHistory.objects.create(
+                question=question,
+                subject=question.subject,
+                content=question.content,
+            )
             question = form.save(commit=False)
-            question.author = request.user
-            question.modify_date = timezone.now()  # 수정일시 저장
+            question.modify_date = timezone.now()
             question.save()
             return redirect('pybo:detail', question_id=question.id)
     else:
